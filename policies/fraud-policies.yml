@@ -1,0 +1,147 @@
+# Fraud Policies
+# Governs who can trigger fraud analysis, publish verdicts, and access fraud graph data.
+# Compiled by Identity Service at startup and distributed via Kafka (policy-updates topic).
+
+---
+- policy-id: fraud-analysis-trigger
+  version: "1.0.0"
+  description: >
+    Only the transaction-service (internal service) may submit a transaction for
+    fraud analysis. No external caller or other service may directly trigger analysis.
+  target:
+    resource-type: FRAUD_ANALYSIS
+    action: SUBMIT
+  rules:
+    - id: permit-transaction-service
+      description: Transaction service may submit transactions for fraud analysis.
+      conditions:
+        subject:
+          - attribute: roles
+            operator: HAS_ROLE
+            value: INTERNAL_SERVICE
+          - attribute: serviceName
+            operator: EQ
+            value: transaction-service
+      effect: PERMIT
+
+    - id: deny-all-others
+      description: Deny fraud analysis submission from any other caller.
+      conditions: {}
+      effect: DENY
+      obligations:
+        - type: AUDIT_LOG
+          params:
+            reason: UNAUTHORIZED_FRAUD_ANALYSIS_SUBMISSION
+
+---
+- policy-id: fraud-verdict-publish
+  version: "1.0.0"
+  description: >
+    Only the fraud-service itself may publish a fraud verdict (CLEARED or SUSPECTED).
+    Verdicts are published via Kafka events; this policy governs the internal
+    authorization check before the event is emitted.
+  target:
+    resource-type: FRAUD_VERDICT
+    action: PUBLISH
+  rules:
+    - id: permit-fraud-service
+      description: Only fraud-service may publish verdicts.
+      conditions:
+        subject:
+          - attribute: roles
+            operator: HAS_ROLE
+            value: INTERNAL_SERVICE
+          - attribute: serviceName
+            operator: EQ
+            value: fraud-service
+      effect: PERMIT
+
+    - id: deny-all-others
+      description: Deny verdict publishing from any other caller.
+      conditions: {}
+      effect: DENY
+      obligations:
+        - type: AUDIT_LOG
+          params:
+            reason: UNAUTHORIZED_VERDICT_PUBLISH_ATTEMPT
+
+---
+- policy-id: fraud-graph-read
+  version: "1.0.0"
+  description: >
+    Access to the Neo4J fraud relationship graph is restricted to the fraud-service
+    internally and to admins for investigation purposes. No external user may
+    directly query graph data.
+  target:
+    resource-type: FRAUD_GRAPH
+    action: READ
+  rules:
+    - id: permit-admin
+      description: Admins may query the fraud graph for investigation.
+      conditions:
+        subject:
+          - attribute: roles
+            operator: HAS_ROLE
+            value: ADMIN
+      effect: PERMIT
+      obligations:
+        - type: AUDIT_LOG
+          params:
+            reason: ADMIN_FRAUD_GRAPH_ACCESS
+
+    - id: permit-fraud-service-internal
+      description: Fraud service may read its own graph data during analysis.
+      conditions:
+        subject:
+          - attribute: roles
+            operator: HAS_ROLE
+            value: INTERNAL_SERVICE
+          - attribute: serviceName
+            operator: EQ
+            value: fraud-service
+      effect: PERMIT
+
+    - id: deny-all-others
+      description: Deny graph access to all other callers.
+      conditions: {}
+      effect: DENY
+      obligations:
+        - type: AUDIT_LOG
+          params:
+            reason: UNAUTHORIZED_FRAUD_GRAPH_ACCESS
+
+---
+- policy-id: fraud-rules-manage
+  version: "1.0.0"
+  description: >
+    Management of Redis-based fraud rules (create, update, delete) is restricted
+    exclusively to admins. These rules define fast pattern matching thresholds
+    (e.g., max transactions per hour, velocity limits).
+  target:
+    resource-type: FRAUD_RULE
+    action: MANAGE
+  rules:
+    - id: permit-admin
+      description: Only admins may create, update, or delete fraud rules.
+      conditions:
+        subject:
+          - attribute: roles
+            operator: HAS_ROLE
+            value: ADMIN
+          - attribute: status
+            operator: EQ
+            value: ACTIVE
+      effect: PERMIT
+      obligations:
+        - type: AUDIT_LOG
+          params:
+            reason: ADMIN_FRAUD_RULE_CHANGE
+
+    - id: deny-all-others
+      description: Deny fraud rule management to all other callers.
+      conditions: {}
+      effect: DENY
+      obligations:
+        - type: AUDIT_LOG
+          params:
+            reason: UNAUTHORIZED_FRAUD_RULE_MANAGE_ATTEMPT

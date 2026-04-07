@@ -1,0 +1,127 @@
+# Transfer Policies
+# Governs who can initiate, approve, and view financial transfers.
+# Compiled by Identity Service at startup and distributed via Kafka (policy-updates topic).
+
+---
+- policy-id: transfer-initiate
+  version: "1.0.0"
+  description: >
+    A user may initiate a transfer only if their account is active, their identity
+    is verified, and they are the owner of the source account. Suspended or blocked
+    accounts are denied regardless of other attributes.
+  target:
+    resource-type: TRANSACTION
+    action: INITIATE
+  rules:
+    - id: deny-suspended-subject
+      description: Deny if the requesting user is suspended or blocked.
+      conditions:
+        subject:
+          - attribute: status
+            operator: IN
+            value: [SUSPENDED, BLOCKED]
+      effect: DENY
+      obligations:
+        - type: AUDIT_LOG
+          params:
+            reason: SUBJECT_SUSPENDED_OR_BLOCKED
+
+    - id: deny-unverified-identity
+      description: Deny if the user's identity has not been verified.
+      conditions:
+        subject:
+          - attribute: identityVerified
+            operator: EQ
+            value: false
+      effect: DENY
+      obligations:
+        - type: AUDIT_LOG
+          params:
+            reason: IDENTITY_NOT_VERIFIED
+
+    - id: deny-non-owner
+      description: Deny if the requesting user is not the owner of the source account.
+      conditions:
+        subject:
+          - attribute: id
+            operator: NEQ
+            value: "${resource.ownerId}"
+      effect: DENY
+      obligations:
+        - type: AUDIT_LOG
+          params:
+            reason: NOT_ACCOUNT_OWNER
+
+    - id: deny-blocked-source-account
+      description: Deny if the source account is blocked or frozen.
+      conditions:
+        resource:
+          - attribute: status
+            operator: IN
+            value: [BLOCKED, FROZEN]
+      effect: DENY
+      obligations:
+        - type: AUDIT_LOG
+          params:
+            reason: SOURCE_ACCOUNT_BLOCKED
+
+    - id: permit-verified-owner
+      description: Permit if the user is the verified owner of an active account.
+      conditions:
+        subject:
+          - attribute: identityVerified
+            operator: EQ
+            value: true
+          - attribute: status
+            operator: EQ
+            value: ACTIVE
+        resource:
+          - attribute: status
+            operator: EQ
+            value: ACTIVE
+          - attribute: ownerId
+            operator: EQ
+            value: "${subject.id}"
+      effect: PERMIT
+      obligations:
+        - type: AUDIT_LOG
+          params:
+            reason: TRANSFER_INITIATED_BY_OWNER
+
+---
+- policy-id: transfer-read
+  version: "1.0.0"
+  description: >
+    A user may read the details of a transaction only if they are the owner of
+    the source or destination account involved in the transaction. Admins may
+    read any transaction.
+  target:
+    resource-type: TRANSACTION
+    action: READ
+  rules:
+    - id: permit-admin
+      description: Admins can read any transaction.
+      conditions:
+        subject:
+          - attribute: roles
+            operator: HAS_ROLE
+            value: ADMIN
+      effect: PERMIT
+
+    - id: permit-transaction-participant
+      description: Allow read if the subject owns the source or destination account.
+      conditions:
+        subject:
+          - attribute: id
+            operator: IN
+            value: ["${resource.sourceAccountOwnerId}", "${resource.destinationAccountOwnerId}"]
+      effect: PERMIT
+
+    - id: deny-non-participant
+      description: Deny all other read attempts.
+      conditions: {}
+      effect: DENY
+      obligations:
+        - type: AUDIT_LOG
+          params:
+            reason: NON_PARTICIPANT_READ_ATTEMPT

@@ -1,0 +1,128 @@
+# Account Policies
+# Governs who can read, modify, block, and manage accounts.
+# Compiled by Identity Service at startup and distributed via Kafka (policy-updates topic).
+
+---
+- policy-id: account-read
+  version: "1.0.0"
+  description: >
+    A user may read their own account details. Admins and internal services
+    (identified by service role) may read any account.
+  target:
+    resource-type: ACCOUNT
+    action: READ
+  rules:
+    - id: permit-admin
+      description: Admins can read any account.
+      conditions:
+        subject:
+          - attribute: roles
+            operator: HAS_ROLE
+            value: ADMIN
+      effect: PERMIT
+
+    - id: permit-internal-service
+      description: Internal services (e.g., fraud-service, audit-service) may read accounts.
+      conditions:
+        subject:
+          - attribute: roles
+            operator: HAS_ROLE
+            value: INTERNAL_SERVICE
+      effect: PERMIT
+
+    - id: permit-owner
+      description: A user may read their own account.
+      conditions:
+        subject:
+          - attribute: id
+            operator: EQ
+            value: "${resource.ownerId}"
+      effect: PERMIT
+
+    - id: deny-non-owner
+      description: Deny read for non-owners without elevated roles.
+      conditions: {}
+      effect: DENY
+      obligations:
+        - type: AUDIT_LOG
+          params:
+            reason: NON_OWNER_READ_ATTEMPT
+
+---
+- policy-id: account-block
+  version: "1.0.0"
+  description: >
+    Only admins and the fraud-service (internal service role) may block an account.
+    Self-blocking by account owners is not permitted.
+  target:
+    resource-type: ACCOUNT
+    action: BLOCK
+  rules:
+    - id: permit-admin
+      description: Admins may block any account.
+      conditions:
+        subject:
+          - attribute: roles
+            operator: HAS_ROLE
+            value: ADMIN
+      effect: PERMIT
+      obligations:
+        - type: AUDIT_LOG
+          params:
+            reason: ADMIN_INITIATED_ACCOUNT_BLOCK
+
+    - id: permit-fraud-service
+      description: Fraud service may block accounts on fraud detection.
+      conditions:
+        subject:
+          - attribute: roles
+            operator: HAS_ROLE
+            value: INTERNAL_SERVICE
+          - attribute: serviceName
+            operator: EQ
+            value: fraud-service
+      effect: PERMIT
+      obligations:
+        - type: AUDIT_LOG
+          params:
+            reason: FRAUD_INITIATED_ACCOUNT_BLOCK
+
+    - id: deny-all-others
+      description: Deny all other block attempts.
+      conditions: {}
+      effect: DENY
+      obligations:
+        - type: AUDIT_LOG
+          params:
+            reason: UNAUTHORIZED_BLOCK_ATTEMPT
+
+---
+- policy-id: account-balance-reserve
+  version: "1.0.0"
+  description: >
+    Only the transaction-service (internal service) may reserve funds in an account
+    during an active Saga. No user or other service may directly reserve balance.
+  target:
+    resource-type: ACCOUNT
+    action: RESERVE_BALANCE
+  rules:
+    - id: permit-transaction-service
+      description: Transaction service may trigger balance reservation.
+      conditions:
+        subject:
+          - attribute: roles
+            operator: HAS_ROLE
+            value: INTERNAL_SERVICE
+          - attribute: serviceName
+            operator: EQ
+            value: transaction-service
+      effect: PERMIT
+
+    - id: deny-all-others
+      description: Deny balance reservation from any other caller.
+      conditions: {}
+      effect: DENY
+      obligations:
+        - type: AUDIT_LOG
+          params:
+            reason: UNAUTHORIZED_BALANCE_RESERVE_ATTEMPT
