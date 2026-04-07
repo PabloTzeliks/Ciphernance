@@ -30,12 +30,12 @@
 
     <!-- ─── Modules ─────────────────────────────────────────────────────────── -->
     <modules>
-        <module>services/api-gateway</module>
+        <!-- <module>services/api-gateway</module> -->
         <module>services/identity-service</module>
-        <module>services/account-service</module>
-        <module>services/transaction-service</module>
-        <module>services/fraud-service</module>
-        <module>services/audit-service</module>
+        <!-- <module>services/account-service</module> -->
+        <!-- <module>services/transaction-service</module> -->
+        <!-- <module>services/fraud-service</module> -->
+        <!-- <module>services/audit-service</module> -->
     </modules>
 
     <!-- ─── Properties ──────────────────────────────────────────────────────── -->
