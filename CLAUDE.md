@@ -90,6 +90,19 @@ See /docs/adr/ for all Architectural Decision Records.
 - ADR-005: Two-level cache L1 Caffeine + L2 Redis
 - ADR-006: No decision-level cache in financial systems
 
+## Git Workflow
+
+- NEVER add Co-Authored-By in commit messages
+- NEVER commit directly to main branch
+- Always create a feature branch before making changes: git checkout -b <branch-name>
+- Branch naming convention:
+  - feature/description — new features
+  - chore/description — setup, config, infra
+  - fix/description — bug fixes
+  - docs/description — documentation only
+- Always push the branch and let the developer create the PR manually
+- Commit messages must follow Conventional Commits: type(scope): description
+
 ## Development Notes
 
 - Each service has its own independent pom.xml
