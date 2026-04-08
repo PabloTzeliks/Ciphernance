@@ -19,6 +19,7 @@ public final class Email {
         if (!EMAIL_PATTERN.matcher(normalized).matches()) {
             throw new InvalidEmailException("Invalid email format: " + value);
         }
+
         this.value = normalized;
     }
 
