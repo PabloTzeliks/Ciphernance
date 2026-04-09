@@ -32,14 +32,13 @@ public class Account {
         this.updatedAt = updatedAt;
     }
 
-    public static Account createFor(UUID userId,
-                                    AccountType type) {
+    public static Account createFor(UUID ownerId) {
 
         Instant now = Instant.now();
 
         return new Account(Generators.timeBasedEpochGenerator().generate(),
-                userId,
-                type,
+                ownerId,
+                AccountType.CHECKING,
                 AccountStatus.ACTIVE,
                 now,
                 now
@@ -47,13 +46,13 @@ public class Account {
     }
 
     public static Account restore(UUID id,
-                                  UUID userId,
+                                  UUID ownerId,
                                   AccountType type,
                                   AccountStatus status,
                                   Instant createdAt,
                                   Instant updatedAt) {
 
-        return new Account(id, userId, type,
+        return new Account(id, ownerId, type,
                 status, createdAt, updatedAt);
     }
 
@@ -76,5 +75,29 @@ public class Account {
 
         this.status = next;
         this.updatedAt = Instant.now();
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public UUID getOwnerId() {
+        return ownerId;
+    }
+
+    public AccountType getType() {
+        return type;
+    }
+
+    public AccountStatus getStatus() {
+        return status;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
 }
