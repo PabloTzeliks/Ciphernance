@@ -50,18 +50,16 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-    public static User create(String username,
-            String email,
-            String passwordHash) {
+    public static User create(Username username,
+                              Email email,
+                              String passwordHash) {
 
-        Email userEmail = new Email(email);
-        Username userUsername = new Username(username);
         Instant now = Instant.now();
 
         return new User(
                 Generators.timeBasedEpochGenerator().generate(),
-                userUsername,
-                userEmail,
+                username,
+                email,
                 passwordHash,
                 UserRole.USER_ROLE,
                 KycLevel.KYC_LEVEL_1,
