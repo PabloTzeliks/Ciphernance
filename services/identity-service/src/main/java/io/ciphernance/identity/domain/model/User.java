@@ -120,7 +120,7 @@ public class User {
 
     private void transitionTo(UserStatus next) {
         if (!this.status.canTransitionTo(next)) {
-            throw new InvalidStatusTransitionException(this.status, next);
+            throw new InvalidUserStatusTransitionException(this.status, next);
         }
 
         this.status = next;
