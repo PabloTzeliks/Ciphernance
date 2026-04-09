@@ -13,16 +13,16 @@ import java.util.UUID;
 
 public class User {
 
-    private UUID id;
+    private final UUID id;
     private Username username;
-    private Email email;
+    private final Email email;
     private String passwordHash;
     private UserRole role;
     private KycLevel kycLevel;
     private boolean mfaEnabled;
     private String mfaSecret;
     private UserStatus status;
-    private Instant createdAt;
+    private final Instant createdAt;
     private Instant updatedAt;
 
     private User(UUID id,
