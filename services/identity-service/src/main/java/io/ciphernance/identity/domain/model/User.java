@@ -14,7 +14,7 @@ import java.util.UUID;
 public class User {
 
     private final UUID id;
-    private Username username;
+    private final Username username;
     private final Email email;
     private String passwordHash;
     private UserRole role;
@@ -82,6 +82,12 @@ public class User {
                                UserStatus status,
                                Instant createdAt,
                                Instant updatedAt) {
+
+        if (mfaEnabled && (mfaSecret == null || mfaSecret.isBlank())) {
+            throw new IllegalStateException(
+                    "Cannot restore User with mfaEnabled=true and null mfaSecret"
+            );
+        }
 
         return new User(id, username, email, passwordHash,
                 role, kycLevel, mfaEnabled, mfaSecret,
