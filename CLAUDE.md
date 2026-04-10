@@ -13,8 +13,8 @@ Ciphernance emulates the core of a banking system focused on transactions, autho
 ## Services
 
 - **api-gateway** — Entry point. JWT validation, ABAC first layer (PEP), rate limiting, routing. Spring Cloud Gateway.
-- **identity-service** — Source of truth for identities, accounts, and authorization policies. Spring Authorization Server. Manages PAP (YAML policies), PIP (user/account attributes). Compiles YAML policies and distributes via Kafka.
-- **account-service** — Account state and balance management. Validates balance, reserves funds during Saga, finalizes debit/credit after confirmation. Blocks accounts on fraud detection.
+- **identity-service** — Source of truth for identities, accounts, and authorization policies. Spring Authorization Server. Manages PAP (YAML policies), PIP (user/account attributes). Compiles YAML policies and distributes via Kafka. Owns User and Account domain entities.
+- **wallet-service** — Wallet and balance management. Owns Wallet and Balance domain entities. Creates Wallet upon AccountCreatedEvent from identity-service. Validates balance, reserves funds during Saga, finalizes debit/credit after confirmation. Blocks wallets on fraud detection.
 - **transaction-service** — Orchestrates the transfer Saga. ABAC authorization (ownership validation). Event Sourcing for transaction state. Choreography-based Saga coordinator.
 - **fraud-service** — Pattern analysis. Redis for fast rules. Neo4J for relationship graphs (transfer cycles, shared devices). Publishes CLEARED or SUSPECTED verdict.
 - **audit-service** — Immutable event history. Consumes authorization audit events and business events from all services. Never affects main flow latency.
@@ -73,11 +73,11 @@ Ciphernance emulates the core of a banking system focused on transactions, autho
 1. Client → API Gateway (JWT validated)
 2. API Gateway → Transaction Service
 3. Transaction Service: ABAC check (ownership + permission) → publishes TransactionInitiatedEvent → state: PENDING
-4. Account Service: validates balance + account state → reserves funds → publishes AccountsValidatedEvent or AccountValidationFailedEvent
+4. Wallet Service: validates balance + wallet state → reserves funds → publishes AccountsValidatedEvent or AccountValidationFailedEvent
 5. Transaction Service: publishes TransactionApprovedForAnalysisEvent
 6. Fraud Service: analyzes patterns → publishes TransactionClearedEvent or FraudSuspectedEvent
-7a. CLEARED → Transaction Service publishes TransactionCompletedEvent → Account Service finalizes debit/credit
-7b. SUSPECTED → Transaction Service publishes TransactionReversalEvent → Account Service releases reserved funds + blocks accounts → Identity Service publishes AccessRevokedEvent
+7a. CLEARED → Transaction Service publishes TransactionCompletedEvent → Wallet Service finalizes debit/credit
+7b. SUSPECTED → Transaction Service publishes TransactionReversalEvent → Wallet Service releases reserved funds + blocks wallets → Identity Service publishes AccessRevokedEvent
 
 ## ADRs
 
@@ -89,6 +89,8 @@ See /docs/adr/ for all Architectural Decision Records.
 - ADR-004: Event Sourcing in Transaction Service
 - ADR-005: Two-level cache L1 Caffeine + L2 Redis
 - ADR-006: No decision-level cache in financial systems
+- ADR-007: UUID v7 as Primary Key Strategy
+- ADR-008: Domain Model — User, Account, Wallet, Balance
 
 ## Git Workflow
 
@@ -111,3 +113,21 @@ See /docs/adr/ for all Architectural Decision Records.
 - Each service has its own PostgreSQL schema
 - Policy Agent is embedded in each service JAR — not a separate service
 - Out of scope for MVP: deposits, withdrawals, credit, investments, card, real Banco Central integration, Kubernetes, frontend
+
+## Implementation Notes
+
+### identity-service domain layer
+
+**Package convention for enums:**
+Two categories coexist in the domain:
+- Enums with behavioral methods (state machine transitions, promotion logic) live in `domain/vo/`: `UserStatus`, `AccountStatus`, `KycLevel`
+- Simple classification enums without behavior live in `domain/model/enums/`: `UserRole`, `AccountType`
+
+**`User.create()` accepts pre-constructed Value Objects, not raw Strings.**
+The factory signature is `User.create(Username, Email, String passwordHash)`. VO construction (`new Email(...)`, `new Username(...)`) is the caller's (use case's) responsibility. The ADR-007 example showed raw Strings for illustration only — the actual implementation is intentionally different.
+
+**`Account` uses `ownerId` instead of `userId`.**
+The entity field and port methods use `ownerId` to remain forward-compatible with ADR-008's deferred `OwnerType` (USER, AGENT, MERCHANT). MVP only supports USER, but the naming is intentional.
+
+**`KycLevel.isEligibleForAmount(BigDecimal)` is deliberately absent.**
+Amount limits are owned by ABAC policies (transfer-policies.yml), not the domain model. Placing limit enforcement in the domain would duplicate and potentially diverge from the policy engine. KycLevel carries only promotion logic — authorization decisions belong to the PDP.
