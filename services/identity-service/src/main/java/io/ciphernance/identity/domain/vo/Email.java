@@ -2,6 +2,7 @@ package io.ciphernance.identity.domain.vo;
 
 import io.ciphernance.identity.domain.exception.InvalidEmailException;
 
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 public final class Email {
@@ -15,7 +16,7 @@ public final class Email {
         if (value == null || value.isBlank()) {
             throw new InvalidEmailException("Email must not be blank");
         }
-        String normalized = value.strip().toLowerCase();
+        String normalized = value.strip().toLowerCase(Locale.ROOT);
         if (!EMAIL_PATTERN.matcher(normalized).matches()) {
             throw new InvalidEmailException("Invalid email format: " + value);
         }
