@@ -1,6 +1,5 @@
 package io.ciphernance.identity.domain.event;
 
-import io.ciphernance.identity.domain.model.enums.AccountType;
 import io.ciphernance.identity.domain.vo.AccountStatus;
 
 import java.time.Instant;
