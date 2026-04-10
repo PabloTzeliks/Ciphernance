@@ -88,9 +88,7 @@ public class User {
                                Instant updatedAt) {
 
         if (mfaEnabled && (mfaSecret == null || mfaSecret.isBlank())) {
-            throw new IllegalStateException(
-                    "Cannot restore User with mfaEnabled=true and null mfaSecret"
-            );
+            throw new InvalidMfaExeception("Cannot restore User with a MFA enabled and null MFA secret");
         }
 
         return new User(id, username, email, passwordHash,
