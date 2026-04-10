@@ -56,6 +56,10 @@ public class User {
 
         Instant now = Instant.now();
 
+        if (passwordHash == null || passwordHash.isBlank()) {
+            throw new InvalidPasswordException("Password must not be blank");
+        }
+
         return new User(
                 Generators.timeBasedEpochGenerator().generate(),
                 username,
@@ -134,7 +138,7 @@ public class User {
     }
 
     public void promoteKyc(KycLevel newLevel) {
-        if (newLevel.ordinal() <= this.kycLevel.ordinal()) {
+        if (!this.kycLevel.canPromoteTo(newLevel)) {
             throw new InvalidKycPromotionException(this.kycLevel, newLevel);
         }
 
