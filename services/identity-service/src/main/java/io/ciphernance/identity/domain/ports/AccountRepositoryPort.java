@@ -9,6 +9,6 @@ public interface AccountRepositoryPort {
 
     Account save(Account account);
     Optional<Account> findById(UUID id);
-    Optional<Account> findByUserId(UUID userId);
-    boolean existsByUserId(UUID userId);
+    Optional<Account> findByOwnerId(UUID userId);
+    boolean existsByOwnerId(UUID userId);
 }
