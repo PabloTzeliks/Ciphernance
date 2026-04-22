@@ -1,4 +1,4 @@
-package io.ciphernance.identity.application.exception;
+package io.ciphernance.identity.application.exception.base;
 
 public class HandlerNotFoundException extends RuntimeException {
     public HandlerNotFoundException(Class<?> type, String kind) {
