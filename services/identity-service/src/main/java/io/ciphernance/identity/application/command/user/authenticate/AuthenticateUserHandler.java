@@ -18,7 +18,9 @@ import io.ciphernance.identity.domain.port.AccountRepositoryPort;
 import io.ciphernance.identity.domain.port.UserRepositoryPort;
 import io.ciphernance.identity.domain.vo.Email;
 import io.ciphernance.identity.domain.vo.UserStatus;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AuthenticateUserHandler implements CommandHandler<AuthenticateUserCommand, AuthenticateUserResponse> {
 
     private final UserRepositoryPort userRepository;
