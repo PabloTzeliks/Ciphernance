@@ -1,7 +1,7 @@
 package io.ciphernance.identity.infrastructure.mediator;
 
 import io.ciphernance.identity.application.mediator.*;
-import io.ciphernance.identity.application.exception.base.HandlerNotFoundException;
+import io.ciphernance.identity.infrastructure.exception.HandlerNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.ParameterizedType;
