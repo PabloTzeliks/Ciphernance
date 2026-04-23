@@ -5,5 +5,6 @@ import io.ciphernance.identity.application.mediator.Command;
 public record AuthenticateUserCommand(
 
         String email,
-        String password
+        String password,
+        String totpCode
 ) implements Command<AuthenticateUserResponse> { }
