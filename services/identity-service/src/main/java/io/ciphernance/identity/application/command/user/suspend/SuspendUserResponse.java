@@ -1,9 +1,9 @@
-package io.ciphernance.identity.application.command.user.block;
+package io.ciphernance.identity.application.command.user.suspend;
 
 import java.time.Instant;
 import java.util.UUID;
 
-public record BlockUserResponse (
+public record SuspendUserResponse(
 
         UUID userId,
         Instant executedAt
