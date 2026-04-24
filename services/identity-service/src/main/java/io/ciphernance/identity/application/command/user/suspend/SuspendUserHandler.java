@@ -1,7 +1,5 @@
 package io.ciphernance.identity.application.command.user.suspend;
 
-import io.ciphernance.identity.application.command.user.block.BlockUserCommand;
-import io.ciphernance.identity.application.command.user.block.BlockUserResponse;
 import io.ciphernance.identity.application.exception.user.UserNotFoundException;
 import io.ciphernance.identity.application.mediator.CommandHandler;
 import io.ciphernance.identity.application.port.out.EventPublisherPort;
@@ -11,9 +9,11 @@ import io.ciphernance.identity.domain.event.UserStatusChangedEvent;
 import io.ciphernance.identity.domain.model.User;
 import io.ciphernance.identity.domain.port.UserRepositoryPort;
 import io.ciphernance.identity.domain.vo.UserStatus;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class SuspendUserHandler implements CommandHandler<SuspendUserCommand, SuspendUserResponse> {
 
     private final UserRepositoryPort userRepository;
