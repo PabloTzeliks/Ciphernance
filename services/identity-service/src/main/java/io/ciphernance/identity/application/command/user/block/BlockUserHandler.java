@@ -53,8 +53,6 @@ public class BlockUserHandler implements CommandHandler<BlockUserCommand, BlockU
 
         return new BlockUserResponse(
                 user.getId(),
-                previousStatus,
-                user.getStatus(),
                 user.getUpdatedAt()
         );
     }
