@@ -6,6 +6,5 @@ import java.util.UUID;
 
 public record BlockUserCommand(
 
-        UUID userId,
-        String reason
+        UUID userId
 ) implements Command<BlockUserResponse> { }

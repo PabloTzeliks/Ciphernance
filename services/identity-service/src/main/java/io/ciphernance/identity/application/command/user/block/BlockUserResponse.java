@@ -10,6 +10,5 @@ public record BlockUserResponse (
         UUID userId,
         UserStatus previousStatus,
         UserStatus currentStatus,
-        String reason,
         Instant blockedAt
 ) { }

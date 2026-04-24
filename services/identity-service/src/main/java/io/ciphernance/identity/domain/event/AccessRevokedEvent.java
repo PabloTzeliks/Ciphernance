@@ -6,7 +6,6 @@ import java.util.UUID;
 public record AccessRevokedEvent(
         UUID eventId,
         UUID aggregateId,
-        String reason,
         Instant occurredAt
 
 ) implements DomainEvent {
