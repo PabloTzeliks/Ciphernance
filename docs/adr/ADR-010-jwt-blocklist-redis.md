@@ -19,3 +19,27 @@ When BlockUserHandler publishes AccessRevokedEvent, the API Gateway Policy Agent
 Every request through the API Gateway checks the blocklist before forwarding. If the userId is present, the request is rejected with 401 regardless of JWT validity.
 
 ## Flow
+BlockUserHandler publishes AccessRevokedEvent to the access-revocation topic (high priority).
+API Gateway Policy Agent consumes the event immediately.
+
+Policy Agent adds userId to Redis blocklist with TTL equal to the access token expiry.
+
+On the next request from the blocked user, the API Gateway checks the blocklist.
+
+userId found in blocklist — request rejected with 401 Unauthorized.
+
+TTL expires automatically after the token would have expired anyway — no manual cleanup needed.
+
+## Consequences
+
+**Gains:**
+- Immediate session invalidation with no window where blocked users retain access
+- Consistent with existing ABAC cache infrastructure — Redis is already present per service
+- Decoupled — API Gateway reacts to the event, Identity Service does not poll or notify directly
+- TTL automatically cleans up blocklist entries after token expiry — no manual cleanup
+
+**Costs:**
+- Redis becomes a critical dependency of the API Gateway security flow
+- Redis failure requires fail-closed behavior — availability is sacrificed for security
+- Blocklist check adds minor latency to every request (approximately 1ms)
+- Blocklist must be replicated if API Gateway runs multiple instances — mitigated by shared Redis
