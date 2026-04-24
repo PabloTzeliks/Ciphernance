@@ -8,7 +8,9 @@ import io.ciphernance.identity.domain.event.KycLevelUpdatedEvent;
 import io.ciphernance.identity.domain.model.User;
 import io.ciphernance.identity.domain.port.UserRepositoryPort;
 import io.ciphernance.identity.domain.vo.KycLevel;
+import org.springframework.stereotype.Component;
 
+@Component
 public class KycPromoteUserHandler implements CommandHandler<KycPromoteUserCommand, KycPromoteUserResponse> {
 
     private final UserRepositoryPort userRepository;
