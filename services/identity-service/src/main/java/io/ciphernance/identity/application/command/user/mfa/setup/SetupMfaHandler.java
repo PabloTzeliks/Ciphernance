@@ -1,11 +1,10 @@
-package io.ciphernance.identity.application.command.user.mfa;
+package io.ciphernance.identity.application.command.user.mfa.setup;
 
 import io.ciphernance.identity.application.exception.user.UserNotFoundException;
 import io.ciphernance.identity.application.mediator.CommandHandler;
 import io.ciphernance.identity.application.port.out.EventPublisherPort;
 import io.ciphernance.identity.application.port.out.MfaSetupCachePort;
 import io.ciphernance.identity.application.port.out.TotpGeneratorPort;
-import io.ciphernance.identity.application.port.out.TotpValidatorPort;
 import io.ciphernance.identity.domain.model.User;
 import io.ciphernance.identity.domain.port.UserRepositoryPort;
 import org.springframework.stereotype.Component;
