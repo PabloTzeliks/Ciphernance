@@ -4,7 +4,7 @@
 Accepted
 
 ## Context
-JWT tokens are stateless — once issued, they remain valid until expiration regardless of user status changes. When a user is blocked (fraud, admin action, compliance), their active sessions must be invalidated immediately.
+JWT tokens are stateless — once issued, they remain valid until expiration regardless of user status changes. When a user is blocked or suspended (fraud, admin action, compliance), their active sessions must be invalidated immediately.
 
 Three approaches were evaluated:
 1. Short-lived tokens (5-15 min expiry) — simple, no state, but delayed invalidation
@@ -14,12 +14,12 @@ Three approaches were evaluated:
 ## Decision
 Use Redis blocklist (Option B).
 
-When BlockUserHandler publishes AccessRevokedEvent, the API Gateway Policy Agent consumes it immediately (high-priority topic: access-revocation) and adds the userId to a Redis blocklist with TTL matching the token expiry.
+When BlockUserHandler or SuspendUserHandler publishes AccessRevokedEvent, the API Gateway Policy Agent consumes it immediately (high-priority topic: access-revocation) and adds the userId to a Redis blocklist with TTL matching the token expiry.
 
 Every request through the API Gateway checks the blocklist before forwarding. If the userId is present, the request is rejected with 401 regardless of JWT validity.
 
 ## Flow
-BlockUserHandler publishes AccessRevokedEvent to the access-revocation topic (high priority).
+BlockUserHandler and SuspendUserHandler publishes AccessRevokedEvent to the access-revocation topic (high priority).
 API Gateway Policy Agent consumes the event immediately.
 
 Policy Agent adds userId to Redis blocklist with TTL equal to the access token expiry.
