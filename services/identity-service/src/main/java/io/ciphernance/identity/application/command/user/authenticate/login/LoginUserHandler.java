@@ -2,11 +2,11 @@ package io.ciphernance.identity.application.command.user.authenticate.login;
 
 import io.ciphernance.identity.application.dto.TokenClaims;
 import io.ciphernance.identity.application.dto.TokenPair;
-import io.ciphernance.identity.application.exception.user.UserInactiveException;
 import io.ciphernance.identity.application.exception.account.AccountNotFoundException;
 import io.ciphernance.identity.application.exception.user.InvalidCredentialsException;
 import io.ciphernance.identity.application.exception.user.InvalidMfaCodeException;
 import io.ciphernance.identity.application.exception.user.MfaRequiredException;
+import io.ciphernance.identity.application.exception.user.UserInactiveException;
 import io.ciphernance.identity.application.mediator.CommandHandler;
 import io.ciphernance.identity.application.port.out.PasswordEncoderPort;
 import io.ciphernance.identity.application.port.out.TokenGeneratorPort;
@@ -67,7 +67,7 @@ public class LoginUserHandler implements CommandHandler<LoginUserCommand, LoginU
         }
 
         Account account = accountRepository.findByOwnerId(user.getId())
-                .orElseThrow(() -> new AccountNotFoundException(user.getId()));
+                .orElseThrow(() -> AccountNotFoundException.forOwner(user.getId()));
 
         AuthLevel authLevel = user.isMfaEnabled() ? AuthLevel.MFA : AuthLevel.BASIC;
 
