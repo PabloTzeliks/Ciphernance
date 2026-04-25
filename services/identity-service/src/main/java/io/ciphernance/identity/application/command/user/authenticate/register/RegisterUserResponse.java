@@ -1,4 +1,4 @@
-package io.ciphernance.identity.application.command.user.register;
+package io.ciphernance.identity.application.command.user.authenticate.register;
 
 import java.time.Instant;
 import java.util.UUID;

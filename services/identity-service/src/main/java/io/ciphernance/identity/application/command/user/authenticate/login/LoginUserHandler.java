@@ -1,4 +1,4 @@
-package io.ciphernance.identity.application.command.user.authenticate;
+package io.ciphernance.identity.application.command.user.authenticate.login;
 
 import io.ciphernance.identity.application.dto.TokenClaims;
 import io.ciphernance.identity.application.dto.TokenPair;
@@ -21,7 +21,7 @@ import io.ciphernance.identity.domain.vo.UserStatus;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AuthenticateUserHandler implements CommandHandler<AuthenticateUserCommand, AuthenticateUserResponse> {
+public class LoginUserHandler implements CommandHandler<LoginUserCommand, LoginUserResponse> {
 
     private final UserRepositoryPort userRepository;
     private final AccountRepositoryPort accountRepository;
@@ -29,11 +29,11 @@ public class AuthenticateUserHandler implements CommandHandler<AuthenticateUserC
     private final TokenGeneratorPort tokenGenerator;
     private final TotpValidatorPort totpValidator;
 
-    public AuthenticateUserHandler(UserRepositoryPort userRepository,
-                                   AccountRepositoryPort accountRepository,
-                                   PasswordEncoderPort passwordEncoder,
-                                   TokenGeneratorPort tokenGenerator,
-                                   TotpValidatorPort totpValidator) {
+    public LoginUserHandler(UserRepositoryPort userRepository,
+                            AccountRepositoryPort accountRepository,
+                            PasswordEncoderPort passwordEncoder,
+                            TokenGeneratorPort tokenGenerator,
+                            TotpValidatorPort totpValidator) {
 
         this.userRepository = userRepository;
         this.accountRepository = accountRepository;
@@ -43,7 +43,7 @@ public class AuthenticateUserHandler implements CommandHandler<AuthenticateUserC
     }
 
     @Override
-    public AuthenticateUserResponse handle(AuthenticateUserCommand command) {
+    public LoginUserResponse handle(LoginUserCommand command) {
 
         User user = userRepository.findByEmail(new Email(command.email()))
                 .orElseThrow(InvalidCredentialsException::new);
@@ -81,7 +81,7 @@ public class AuthenticateUserHandler implements CommandHandler<AuthenticateUserC
                 authLevel
         ));
 
-        return new AuthenticateUserResponse(
+        return new LoginUserResponse(
                 tokens.accessToken(),
                 tokens.refreshToken(),
                 "Bearer",

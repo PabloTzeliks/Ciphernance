@@ -1,6 +1,6 @@
-package io.ciphernance.identity.application.command.user.authenticate;
+package io.ciphernance.identity.application.command.user.authenticate.login;
 
-public record AuthenticateUserResponse(
+public record LoginUserResponse(
 
         String accessToken,
         String refreshToken,

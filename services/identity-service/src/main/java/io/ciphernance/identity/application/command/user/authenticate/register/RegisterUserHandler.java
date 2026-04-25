@@ -1,4 +1,4 @@
-package io.ciphernance.identity.application.command.user.register;
+package io.ciphernance.identity.application.command.user.authenticate.register;
 
 import io.ciphernance.identity.application.exception.user.DuplicateEmailException;
 import io.ciphernance.identity.application.exception.user.DuplicateUsernameException;
