@@ -7,4 +7,4 @@ import java.util.UUID;
 public record SuspendUserCommand(
 
         UUID userId
-) implements Command<SuspendUserResponse> { }
+) implements Command<Void> { }

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class SuspendUserHandler implements CommandHandler<SuspendUserCommand, SuspendUserResponse> {
+public class SuspendUserHandler implements CommandHandler<SuspendUserCommand, Void> {
 
     private final UserRepositoryPort userRepository;
     private final EventPublisherPort eventPublisher;
@@ -25,7 +25,7 @@ public class SuspendUserHandler implements CommandHandler<SuspendUserCommand, Su
     }
 
     @Override
-    public SuspendUserResponse handle(SuspendUserCommand command) {
+    public Void handle(SuspendUserCommand command) {
 
         User user = userRepository.findById(command.userId())
                 .orElseThrow(() -> new UserNotFoundException(command.userId()));
@@ -51,9 +51,6 @@ public class SuspendUserHandler implements CommandHandler<SuspendUserCommand, Su
                 )
         ));
 
-        return new SuspendUserResponse(
-                user.getId(),
-                user.getUpdatedAt()
-        );
+        return null;
     }
 }
