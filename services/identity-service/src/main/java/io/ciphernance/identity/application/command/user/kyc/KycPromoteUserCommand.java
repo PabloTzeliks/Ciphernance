@@ -9,4 +9,4 @@ public record KycPromoteUserCommand(
 
         UUID userId,
         KycLevel newKycLevel
-) implements Command<KycPromoteUserResponse> { }
+) implements Command<Void> { }

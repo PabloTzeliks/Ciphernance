@@ -11,7 +11,7 @@ import io.ciphernance.identity.domain.vo.KycLevel;
 import org.springframework.stereotype.Component;
 
 @Component
-public class KycPromoteUserHandler implements CommandHandler<KycPromoteUserCommand, KycPromoteUserResponse> {
+public class KycPromoteUserHandler implements CommandHandler<KycPromoteUserCommand, Void> {
 
     private final UserRepositoryPort userRepository;
     private final EventPublisherPort eventPublisher;
@@ -22,7 +22,7 @@ public class KycPromoteUserHandler implements CommandHandler<KycPromoteUserComma
     }
 
     @Override
-    public KycPromoteUserResponse handle(KycPromoteUserCommand command) {
+    public Void handle(KycPromoteUserCommand command) {
 
         User user = userRepository.findById(command.userId())
                 .orElseThrow(() -> new UserNotFoundException(command.userId()));
@@ -43,9 +43,6 @@ public class KycPromoteUserHandler implements CommandHandler<KycPromoteUserComma
                 )
         );
 
-        return new KycPromoteUserResponse(
-                user.getId(),
-                user.getUpdatedAt()
-        );
+        return null;
     }
 }
