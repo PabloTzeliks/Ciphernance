@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class BlockUserHandler implements CommandHandler<BlockUserCommand, BlockUserResponse> {
+public class BlockUserHandler implements CommandHandler<BlockUserCommand, Void> {
 
     private final UserRepositoryPort userRepository;
     private final EventPublisherPort eventPublisher;
@@ -25,7 +25,7 @@ public class BlockUserHandler implements CommandHandler<BlockUserCommand, BlockU
     }
 
     @Override
-    public BlockUserResponse handle(BlockUserCommand command) {
+    public Void handle(BlockUserCommand command) {
 
         User user = userRepository.findById(command.userId())
                 .orElseThrow(() -> new UserNotFoundException(command.userId()));
@@ -51,9 +51,6 @@ public class BlockUserHandler implements CommandHandler<BlockUserCommand, BlockU
                 )
         ));
 
-        return new BlockUserResponse(
-                user.getId(),
-                user.getUpdatedAt()
-        );
+        return null;
     }
 }

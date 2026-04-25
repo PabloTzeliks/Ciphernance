@@ -7,4 +7,4 @@ import java.util.UUID;
 public record BlockUserCommand(
 
         UUID userId
-) implements Command<BlockUserResponse> { }
+) implements Command<Void> { }
