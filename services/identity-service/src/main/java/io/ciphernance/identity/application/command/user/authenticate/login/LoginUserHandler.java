@@ -48,12 +48,12 @@ public class LoginUserHandler implements CommandHandler<LoginUserCommand, LoginU
         User user = userRepository.findByEmail(new Email(command.email()))
                 .orElseThrow(InvalidCredentialsException::new);
 
-        if (!passwordEncoder.matches(command.password(), user.getPasswordHash())) {
-            throw new InvalidCredentialsException();
-        }
-
         if (user.getStatus() != UserStatus.ACTIVE) {
             throw new UserInactiveException(user.getStatus());
+        }
+
+        if (!passwordEncoder.matches(command.password(), user.getPasswordHash())) {
+            throw new InvalidCredentialsException();
         }
 
         if (user.isMfaEnabled()) {

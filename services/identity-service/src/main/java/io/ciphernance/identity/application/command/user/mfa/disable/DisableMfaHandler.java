@@ -7,7 +7,6 @@ import io.ciphernance.identity.application.port.out.EventPublisherPort;
 import io.ciphernance.identity.application.port.out.TotpValidatorPort;
 import io.ciphernance.identity.domain.event.DomainEvent;
 import io.ciphernance.identity.domain.event.MfaDisabledEvent;
-import io.ciphernance.identity.domain.exception.MfaNotEnabledException;
 import io.ciphernance.identity.domain.model.User;
 import io.ciphernance.identity.domain.port.UserRepositoryPort;
 import org.springframework.stereotype.Component;
@@ -33,10 +32,6 @@ public class DisableMfaHandler implements CommandHandler<DisableMfaCommand, Void
 
         User user = userRepository.findById(command.userId())
                 .orElseThrow(() -> new UserNotFoundException(command.userId()));
-
-        if (!user.isMfaEnabled()) {
-            throw new MfaNotEnabledException(command.userId());
-        }
 
         if (!totpValidator.validate(user.getMfaSecret(), command.totpCode())) {
             throw new InvalidMfaCodeException();
