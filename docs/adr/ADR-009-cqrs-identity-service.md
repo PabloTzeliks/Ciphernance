@@ -52,13 +52,14 @@ application/
 │   └── FraudSuspectedEventHandler.java
 ├── mediator/
 │   ├── Mediator.java
-│   ├── MediatorImpl.java
 │   ├── CommandHandler.java
 │   └── QueryHandler.java
 └── port/out/
 ├── UserRepositoryPort.java
 ├── AccountRepositoryPort.java
 └── EventPublisherPort.java
+
+*Implementation of Mediator should be on Infrastructure*
 
 ## Consequences
 
