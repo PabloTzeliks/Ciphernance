@@ -6,6 +6,7 @@ import io.ciphernance.identity.application.port.out.EventPublisherPort;
 import io.ciphernance.identity.domain.event.DomainEvent;
 import io.ciphernance.identity.domain.event.UserRoleChangedEvent;
 import io.ciphernance.identity.domain.model.User;
+import io.ciphernance.identity.domain.model.enums.UserRole;
 import io.ciphernance.identity.domain.port.UserRepositoryPort;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,8 @@ public class PromoteToAdminHandler implements CommandHandler<PromoteToAdminComma
         User user = userRepository.findById(command.userId())
                 .orElseThrow(() -> new UserNotFoundException(command.userId()));
 
+        UserRole previousRole = user.getRole();
+
         user.promoteToAdmin();
 
         userRepository.save(user);
@@ -34,6 +37,7 @@ public class PromoteToAdminHandler implements CommandHandler<PromoteToAdminComma
                 new UserRoleChangedEvent(
                         DomainEvent.newEventId(),
                         user.getId(),
+                        previousRole,
                         user.getRole(),
                         user.getUpdatedAt()
                 )

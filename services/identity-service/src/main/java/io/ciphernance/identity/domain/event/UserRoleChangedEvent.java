@@ -8,6 +8,7 @@ import java.util.UUID;
 public record UserRoleChangedEvent(
         UUID eventId,
         UUID aggregateId,
+        UserRole previousRole,
         UserRole newRole,
         Instant occurredAt
 ) implements DomainEvent {
