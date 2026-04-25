@@ -30,6 +30,7 @@ public class RegisterUserHandler implements CommandHandler<RegisterUserCommand, 
                                AccountRepositoryPort accountRepository,
                                PasswordEncoderPort passwordEncoder,
                                EventPublisherPort eventPublisher) {
+
         this.userRepository = userRepository;
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
@@ -39,17 +40,20 @@ public class RegisterUserHandler implements CommandHandler<RegisterUserCommand, 
     @Override
     public RegisterUserResponse handle(RegisterUserCommand command) {
 
-        if (userRepository.existsByEmail(new Email(command.email()))) {
+        Email email = new Email(command.email());
+        Username username = new Username(command.username());
+
+        if (userRepository.existsByEmail(email)) {
             throw new DuplicateEmailException(command.email());
         }
 
-        if (userRepository.existsByUsername(new Username(command.username()))) {
+        if (userRepository.existsByUsername(username)) {
             throw new DuplicateUsernameException(command.username());
         }
 
         User user = User.create(
-                new Username(command.username()),
-                new Email(command.email()),
+                username,
+                email,
                 passwordEncoder.encode(command.password())
         );
 
