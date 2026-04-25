@@ -1,4 +1,4 @@
-package io.ciphernance.identity.domain.ports;
+package io.ciphernance.identity.domain.port;
 
 import io.ciphernance.identity.domain.model.Account;
 

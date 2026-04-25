@@ -1,4 +1,4 @@
-package io.ciphernance.identity.domain.ports;
+package io.ciphernance.identity.application.port.out;
 
 import io.ciphernance.identity.domain.event.DomainEvent;
 
