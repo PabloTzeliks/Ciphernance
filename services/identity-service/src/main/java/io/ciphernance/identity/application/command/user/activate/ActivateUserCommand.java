@@ -7,4 +7,4 @@ import java.util.UUID;
 public record ActivateUserCommand(
 
         UUID userId
-) implements Command<ActivateUserResponse> { }
+) implements Command<Void> { }

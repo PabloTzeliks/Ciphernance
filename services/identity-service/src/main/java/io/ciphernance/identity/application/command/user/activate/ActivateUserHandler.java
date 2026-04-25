@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class ActivateUserHandler implements CommandHandler<ActivateUserCommand, ActivateUserResponse> {
+public class ActivateUserHandler implements CommandHandler<ActivateUserCommand, Void> {
 
     private final UserRepositoryPort userRepository;
     private final EventPublisherPort eventPublisher;
@@ -26,7 +26,7 @@ public class ActivateUserHandler implements CommandHandler<ActivateUserCommand, 
 
 
     @Override
-    public ActivateUserResponse handle(ActivateUserCommand command) {
+    public Void handle(ActivateUserCommand command) {
 
         User user = userRepository.findById(command.userId())
                 .orElseThrow(() -> new UserNotFoundException(command.userId()));
@@ -52,9 +52,6 @@ public class ActivateUserHandler implements CommandHandler<ActivateUserCommand, 
                 )
         ));
 
-        return new ActivateUserResponse(
-                user.getId(),
-                user.getUpdatedAt()
-        );
+        return null;
     }
 }
