@@ -22,13 +22,33 @@ public class MediatorImpl implements Mediator {
         this.commandHandlerMap = new HashMap<>();
         this.queryHandlerMap = new HashMap<>();
 
-        commandHandlers.forEach(handler ->
-                commandHandlerMap.put(resolveCommandType(handler), handler)
-        );
+        commandHandlers.forEach(handler -> {
+            Class<?> commandType = resolveCommandType(handler);
 
-        queryHandlers.forEach(handler ->
-                queryHandlerMap.put(resolveQueryType(handler), handler)
-        );
+            if (commandHandlerMap.containsKey(commandType)) {
+                throw new IllegalStateException(
+                        "Duplicate CommandHandler found for: " + commandType.getSimpleName() +
+                                ". Handlers: " + commandHandlerMap.get(commandType).getClass().getSimpleName() +
+                                " and " + handler.getClass().getSimpleName()
+                );
+            }
+
+            commandHandlerMap.put(commandType, handler);
+        });
+
+        queryHandlers.forEach(handler -> {
+            Class<?> queryType = resolveQueryType(handler);
+
+            if (queryHandlerMap.containsKey(queryType)) {
+                throw new IllegalStateException(
+                        "Duplicate QueryHandler found for: " + queryType.getSimpleName() +
+                                ". Handlers: " + queryHandlerMap.get(queryType).getClass().getSimpleName() +
+                                " and " + handler.getClass().getSimpleName()
+                );
+            }
+
+            queryHandlerMap.put(queryType, handler);
+        });
     }
 
     @Override
