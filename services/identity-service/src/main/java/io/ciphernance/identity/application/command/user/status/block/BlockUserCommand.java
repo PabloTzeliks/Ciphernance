@@ -1,10 +1,10 @@
-package io.ciphernance.identity.application.command.user.activate;
+package io.ciphernance.identity.application.command.user.status.block;
 
 import io.ciphernance.identity.application.mediator.Command;
 
 import java.util.UUID;
 
-public record ActivateUserCommand(
+public record BlockUserCommand(
 
         UUID userId
 ) implements Command<Void> { }

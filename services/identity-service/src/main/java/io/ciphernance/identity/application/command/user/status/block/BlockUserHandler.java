@@ -1,4 +1,4 @@
-package io.ciphernance.identity.application.command.user.suspend;
+package io.ciphernance.identity.application.command.user.status.block;
 
 import io.ciphernance.identity.application.exception.user.UserNotFoundException;
 import io.ciphernance.identity.application.mediator.CommandHandler;
@@ -14,25 +14,25 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class SuspendUserHandler implements CommandHandler<SuspendUserCommand, Void> {
+public class BlockUserHandler implements CommandHandler<BlockUserCommand, Void> {
 
     private final UserRepositoryPort userRepository;
     private final EventPublisherPort eventPublisher;
 
-    public SuspendUserHandler(UserRepositoryPort userRepository, EventPublisherPort eventPublisher) {
+    public BlockUserHandler(UserRepositoryPort userRepository, EventPublisherPort eventPublisher) {
         this.userRepository = userRepository;
         this.eventPublisher = eventPublisher;
     }
 
     @Override
-    public Void handle(SuspendUserCommand command) {
+    public Void handle(BlockUserCommand command) {
 
         User user = userRepository.findById(command.userId())
                 .orElseThrow(() -> new UserNotFoundException(command.userId()));
 
         UserStatus previousStatus = user.getStatus();
 
-        user.suspend();
+        user.block();
 
         userRepository.save(user);
 

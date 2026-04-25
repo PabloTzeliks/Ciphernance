@@ -1,10 +1,10 @@
-package io.ciphernance.identity.application.command.user.suspend;
+package io.ciphernance.identity.application.command.user.status.activate;
 
 import io.ciphernance.identity.application.mediator.Command;
 
 import java.util.UUID;
 
-public record SuspendUserCommand(
+public record ActivateUserCommand(
 
         UUID userId
 ) implements Command<Void> { }

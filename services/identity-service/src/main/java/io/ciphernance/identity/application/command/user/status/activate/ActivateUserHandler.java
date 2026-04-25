@@ -1,4 +1,4 @@
-package io.ciphernance.identity.application.command.user.activate;
+package io.ciphernance.identity.application.command.user.status.activate;
 
 import io.ciphernance.identity.application.exception.user.UserNotFoundException;
 import io.ciphernance.identity.application.mediator.CommandHandler;
