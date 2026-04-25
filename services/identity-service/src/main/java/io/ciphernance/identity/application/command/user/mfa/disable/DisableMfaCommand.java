@@ -1,4 +1,4 @@
-package io.ciphernance.identity.application.command.user.mfa;
+package io.ciphernance.identity.application.command.user.mfa.disable;
 
 import io.ciphernance.identity.application.mediator.Command;
 

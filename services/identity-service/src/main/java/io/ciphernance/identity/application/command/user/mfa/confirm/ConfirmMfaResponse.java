@@ -1,4 +1,4 @@
-package io.ciphernance.identity.application.command.user.mfa;
+package io.ciphernance.identity.application.command.user.mfa.confirm;
 
 import java.time.Instant;
 import java.util.UUID;
