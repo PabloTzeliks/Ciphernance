@@ -2,7 +2,7 @@ package io.ciphernance.identity.application.command.user.authenticate.login;
 
 import io.ciphernance.identity.application.dto.TokenClaims;
 import io.ciphernance.identity.application.dto.TokenPair;
-import io.ciphernance.identity.application.exception.account.AccountInactiveException;
+import io.ciphernance.identity.application.exception.user.UserInactiveException;
 import io.ciphernance.identity.application.exception.account.AccountNotFoundException;
 import io.ciphernance.identity.application.exception.user.InvalidCredentialsException;
 import io.ciphernance.identity.application.exception.user.InvalidMfaCodeException;
@@ -53,7 +53,7 @@ public class LoginUserHandler implements CommandHandler<LoginUserCommand, LoginU
         }
 
         if (user.getStatus() != UserStatus.ACTIVE) {
-            throw new AccountInactiveException(user.getStatus());
+            throw new UserInactiveException(user.getStatus());
         }
 
         if (user.isMfaEnabled()) {
