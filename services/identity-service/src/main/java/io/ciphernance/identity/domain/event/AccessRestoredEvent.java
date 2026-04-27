@@ -7,6 +7,7 @@ public record AccessRestoredEvent(
 
         UUID eventId,
         UUID aggregateId,
+        UUID accountId,
         Instant occurredAt
 
 ) implements DomainEvent {
