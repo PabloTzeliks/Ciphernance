@@ -1,0 +1,40 @@
+package io.ciphernance.identity.application.query.user.getuserbyemail;
+
+import io.ciphernance.identity.application.exception.user.UserNotFoundException;
+import io.ciphernance.identity.application.mediator.QueryHandler;
+import io.ciphernance.identity.application.query.user.getuserprofile.GetUserProfileResponse;
+import io.ciphernance.identity.domain.model.User;
+import io.ciphernance.identity.domain.port.UserRepositoryPort;
+import io.ciphernance.identity.domain.vo.Email;
+import org.springframework.stereotype.Component;
+
+@Component
+public class GetUserByEmailHandler implements QueryHandler<GetUserByEmailQuery, GetUserProfileResponse> {
+
+    private final UserRepositoryPort userRepository;
+
+    public GetUserByEmailHandler(UserRepositoryPort userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    public GetUserProfileResponse handle(GetUserByEmailQuery query) {
+
+        Email email = new Email(query.email());
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> UserNotFoundException.forEmail(query.email()));
+
+        return new GetUserProfileResponse(
+                user.getId(),
+                user.getUsername().value(),
+                user.getEmail().value(),
+                user.getRole().name(),
+                user.getKycLevel().name(),
+                user.isMfaEnabled(),
+                user.getStatus().name(),
+                user.getCreatedAt(),
+                user.getUpdatedAt()
+        );
+    }
+}
