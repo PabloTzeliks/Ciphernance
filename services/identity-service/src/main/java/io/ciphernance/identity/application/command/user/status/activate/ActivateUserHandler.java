@@ -64,7 +64,7 @@ public class ActivateUserHandler implements CommandHandler<ActivateUserCommand, 
                 ),
                 new AccountStatusChangedEvent(
                         DomainEvent.newEventId(),
-                        user.getId(),
+                        account.getId(),
                         user.getId(),
                         previousAccountStatus,
                         account.getStatus(),

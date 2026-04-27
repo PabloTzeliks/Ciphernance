@@ -64,7 +64,7 @@ public class SuspendUserHandler implements CommandHandler<SuspendUserCommand, Vo
                 ),
                 new AccountStatusChangedEvent(
                         DomainEvent.newEventId(),
-                        user.getId(),
+                        account.getId(),
                         user.getId(),
                         previousAccountStatus,
                         account.getStatus(),

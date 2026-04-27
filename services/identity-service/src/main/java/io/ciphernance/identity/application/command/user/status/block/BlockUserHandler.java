@@ -64,8 +64,8 @@ public class BlockUserHandler implements CommandHandler<BlockUserCommand, Void> 
                 ),
                 new AccountStatusChangedEvent(
                         DomainEvent.newEventId(),
-                        user.getId(),
                         account.getId(),
+                        user.getId(),
                         previousAccountStatus,
                         account.getStatus(),
                         account.getUpdatedAt()
