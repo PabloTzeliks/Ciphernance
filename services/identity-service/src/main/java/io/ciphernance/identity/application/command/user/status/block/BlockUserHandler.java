@@ -1,5 +1,6 @@
 package io.ciphernance.identity.application.command.user.status.block;
 
+import io.ciphernance.identity.application.exception.account.AccountNotFoundException;
 import io.ciphernance.identity.application.exception.user.UserNotFoundException;
 import io.ciphernance.identity.application.mediator.CommandHandler;
 import io.ciphernance.identity.application.port.out.EventPublisherPort;
@@ -44,13 +45,14 @@ public class BlockUserHandler implements CommandHandler<BlockUserCommand, Void> 
         user.block();
 
         Account account = accountRepository.findByOwnerId(user.getId())
-                .orElseThrow(() -> new UserNotFoundException(command.userId()));
+                .orElseThrow(() -> AccountNotFoundException.forOwner(command.userId()));
 
         AccountStatus previousAccountStatus = account.getStatus();
 
         account.block();
 
         userRepository.save(user);
+        accountRepository.save(account);
 
         eventPublisher.publishAll(List.of(
                 new UserStatusChangedEvent(
