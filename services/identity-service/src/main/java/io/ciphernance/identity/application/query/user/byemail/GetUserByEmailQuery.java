@@ -1,7 +1,7 @@
-package io.ciphernance.identity.application.query.user.getuserbyemail;
+package io.ciphernance.identity.application.query.user.byemail;
 
 import io.ciphernance.identity.application.mediator.Query;
-import io.ciphernance.identity.application.query.user.getuserprofile.GetUserProfileResponse;
+import io.ciphernance.identity.application.query.user.profile.GetUserProfileResponse;
 
 public record GetUserByEmailQuery(
 
