@@ -16,7 +16,7 @@ public class UserNotFoundException extends ResourceNotFoundException {
 
     public static UserNotFoundException forEmail(String email) {
         return new UserNotFoundException(
-                "User not found for user with email: " + email
+                "User not found with email: " + email
         );
     }
 }
