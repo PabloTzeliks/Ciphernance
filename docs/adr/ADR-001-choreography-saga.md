@@ -4,7 +4,7 @@
 Accepted
 
 ## Context
-Ciphernance must execute multi-step financial transactions (transfer Saga) that span multiple services: Transaction Service, Account Service, Fraud Service, and Identity Service. Each step must either complete successfully or trigger a full compensating rollback. In a microservices architecture, there is no shared database transaction — consistency must be achieved through coordination.
+Ciphernance must execute multi-step financial transactions (transfer Saga) that span multiple services: Transaction Service, Wallet Service, Fraud Service, and Identity Service. Each step must either complete successfully or trigger a full compensating rollback. In a microservices architecture, there is no shared database transaction — consistency must be achieved through coordination.
 
 Two Saga implementation styles exist: **orchestration** (a central coordinator issues commands to each participant) and **choreography** (each service reacts to events and publishes new events, with no central controller).
 
@@ -13,7 +13,7 @@ The choice directly impacts coupling, operational complexity, and the learning o
 ## Decision
 Adopt **choreography-based Saga**. Each service listens to Kafka topics, reacts to domain events, executes its local transaction, and publishes the outcome as a new event. There is no dedicated Saga orchestrator service. The Transaction Service acts as the logical initiator and terminator of the Saga but does not issue commands to other services — it publishes events they react to.
 
-Compensation (rollback) is also event-driven: a `FraudSuspectedEvent` triggers a `TransactionReversedEvent`, which Account Service listens to in order to release reserved funds.
+Compensation (rollback) is also event-driven: a `FraudSuspectedEvent` triggers a `TransactionReversalEvent`, which Wallet Service listens to in order to release reserved funds.
 
 ## Consequences
 
