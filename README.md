@@ -79,7 +79,7 @@ Under active development.
 - [x] Monorepo structure and ADRs
 - [x] Docker Compose infrastructure
 - [x] Identity Service — domain layer (User, Account, events, ports)
-- [ ] Identity Service — application layer (Use Cases)
+- [x] Identity Service — application layer (Commands, Queries, Mediator, Ports)
 - [ ] Identity Service — infrastructure layer (JPA, Kafka, Spring Security)
 - [ ] API Gateway
 - [ ] Wallet Service
@@ -91,11 +91,21 @@ Under active development.
 
 See [`/docs/adr`](./docs/adr) for the full records.
 
-- **Choreography-based Saga** — no central orchestrator; services react to and emit events autonomously
-- **Eventually Consistent Authorization** — each service runs a local Policy Agent with ABAC; Identity Service distributes policy updates via Kafka
-- **YAML ABAC policies** — human-readable DSL versioned in `/policies`, compiled and distributed at runtime
-- **Event Sourcing scoped to Transaction Service** — transaction state is the sum of its events; no other service uses this pattern
-- **UUID v7** — time-ordered identifiers for natural sort and indexing without sacrificing uniqueness
+| ADR | Decision |
+|-----|----------|
+| ADR-001 | Choreography-based Saga — no central orchestrator; services react to and emit events autonomously |
+| ADR-002 | Eventually Consistent Authorization — each service runs a local Policy Agent with ABAC |
+| ADR-003 | YAML ABAC policies — human-readable DSL versioned per service |
+| ADR-004 | Event Sourcing scoped to Transaction Service only |
+| ADR-005 | Two-level cache (L1 Caffeine + L2 Redis) for Policy Agents |
+| ADR-006 | No decision-level cache — every authorization is freshly evaluated |
+| ADR-007 | UUID v7 — time-ordered identifiers for natural sort and reduced index fragmentation |
+| ADR-008 | Domain Model — User → Account → Wallet → Balance across Identity and Wallet services |
+| ADR-009 | CQS via Mediator in Identity Service — Commands and Queries in separate handler classes |
+| ADR-010 | JWT session invalidation via Redis blocklist on access revocation |
+| ADR-013 | ABAC policies embedded per service; Identity Service distributes only dynamic attributes |
+| ADR-014 | Hexagonal Architecture (Ports and Adapters) — strict inward dependency direction |
+| ADR-015 | Exception hierarchy — domain exceptions for invariants, application exceptions for use cases |
 
 ---
 
