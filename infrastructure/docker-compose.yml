@@ -41,24 +41,24 @@ services:
       - ciphernance-net
 
   # ─── Neo4J ────────────────────────────────────────────────────────────────────
-  neo4j:
-    image: neo4j:5-community
-    env_file:
-      - .env
-    environment:
-      NEO4J_AUTH: ${NEO4J_AUTH}
-    ports:
-      - "7474:7474"
-      - "7687:7687"
-    volumes:
-      - neo4j_data:/data
-    healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:7474 || exit 1"]
-      interval: 15s
-      timeout: 10s
-      retries: 5
-    networks:
-      - ciphernance-net
+#  neo4j:
+#    image: neo4j:5-community
+#    env_file:
+#      - .env
+#    environment:
+#      NEO4J_AUTH: ${NEO4J_AUTH}
+#    ports:
+#      - "7474:7474"
+#      - "7687:7687"
+#    volumes:
+#      - neo4j_data:/data
+#    healthcheck:
+#      test: ["CMD-SHELL", "wget -q --spider http://localhost:7474 || exit 1"]
+#      interval: 15s
+#      timeout: 10s
+#      retries: 5
+#    networks:
+#      - ciphernance-net
 
   # ─── Zookeeper ────────────────────────────────────────────────────────────────
   zookeeper:
@@ -100,41 +100,41 @@ services:
       - ciphernance-net
 
   # ─── Prometheus ───────────────────────────────────────────────────────────────
-  prometheus:
-    image: prom/prometheus:v2.51.2
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus_data:/prometheus
-    networks:
-      - ciphernance-net
-
-  # ─── Grafana ──────────────────────────────────────────────────────────────────
-  grafana:
-    image: grafana/grafana:10.4.2
-    env_file:
-      - .env
-    depends_on:
-      - prometheus
-    ports:
-      - "3000:3000"
-    environment:
-      GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD}
-    volumes:
-      - grafana_data:/var/lib/grafana
-    networks:
-      - ciphernance-net
+#  prometheus:
+#    image: prom/prometheus:v2.51.2
+#    ports:
+#      - "9090:9090"
+#    volumes:
+#      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+#      - prometheus_data:/prometheus
+#    networks:
+#      - ciphernance-net
+#
+#  # ─── Grafana ──────────────────────────────────────────────────────────────────
+#  grafana:
+#    image: grafana/grafana:10.4.2
+#    env_file:
+#      - .env
+#    depends_on:
+#      - prometheus
+#    ports:
+#      - "3000:3000"
+#    environment:
+#      GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD}
+#    volumes:
+#      - grafana_data:/var/lib/grafana
+#    networks:
+#      - ciphernance-net
 
 volumes:
   postgres_data:
   redis_data:
-  neo4j_data:
+#  neo4j_data:
   zookeeper_data:
   zookeeper_logs:
   kafka_data:
-  prometheus_data:
-  grafana_data:
+#  prometheus_data:
+#  grafana_data:
 
 networks:
   ciphernance-net:
