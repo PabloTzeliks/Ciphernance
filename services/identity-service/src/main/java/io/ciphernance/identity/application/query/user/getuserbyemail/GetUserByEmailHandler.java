@@ -25,16 +25,6 @@ public class GetUserByEmailHandler implements QueryHandler<GetUserByEmailQuery, 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> UserNotFoundException.forEmail(query.email()));
 
-        return new GetUserProfileResponse(
-                user.getId(),
-                user.getUsername().value(),
-                user.getEmail().value(),
-                user.getRole().name(),
-                user.getKycLevel().name(),
-                user.isMfaEnabled(),
-                user.getStatus().name(),
-                user.getCreatedAt(),
-                user.getUpdatedAt()
-        );
+        return GetUserProfileResponse.from(user);
     }
 }

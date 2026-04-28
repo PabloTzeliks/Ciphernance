@@ -21,16 +21,6 @@ public class GetUserProfileHandler implements QueryHandler<GetUserProfileQuery, 
         User user = userRepository.findById(query.userId())
                 .orElseThrow(() -> new UserNotFoundException(query.userId()));
 
-        return new GetUserProfileResponse(
-                user.getId(),
-                user.getUsername().value(),
-                user.getEmail().value(),
-                user.getRole().name(),
-                user.getKycLevel().name(),
-                user.isMfaEnabled(),
-                user.getStatus().name(),
-                user.getCreatedAt(),
-                user.getUpdatedAt()
-        );
+        return GetUserProfileResponse.from(user);
     }
 }
