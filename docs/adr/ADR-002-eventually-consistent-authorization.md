@@ -17,21 +17,26 @@ Each service embeds a **local Policy Agent** — a lightweight in-process compon
 - **PIP (AttributeRepository):** Fetches and caches subject/resource/environment attributes.
 - **Local policy store:** An in-memory copy of compiled policies, kept fresh via Kafka.
 
-**Identity Service** is the single source of truth (PAP). It compiles YAML policy definitions at startup and distributes them via Kafka (`policy-updates` topic). It also publishes attribute change events (`attribute-changes` topic) when user or account state changes.
+**Identity Service** is the single source of truth (PAP). It compiles YAML policy definitions at startup and distributes them via Kafka (`policy-updates` topic). It also publishes specific domain attribute events when user or account state changes — `UserStatusChangedEvent`, `AccountStatusChangedEvent`, `KycLevelUpdatedEvent`, `MfaEnabledEvent` — consumed by each service's Policy Agent to update its local attribute cache.
 
 Each Policy Agent consumes these events and updates its local state. This makes authorization **eventually consistent**: there is a brief window after a policy or attribute change during which a service may still use the previous value. This is accepted as a deliberate trade-off.
 
-**Exception — revocation:** Access revocation is treated as a special case (see ADR-006). `AccessRevokedEvent` flows through a dedicated high-priority topic and triggers immediate cache invalidation.
+**Exception — revocation:** Access revocation is treated as a special case (see ADR-010). `AccessRevokedEvent` flows through a dedicated high-priority topic and triggers immediate cache invalidation.
 
 ## Consequences
 
 **Benefits:**
 - Zero network calls on the authorization hot path — decisions are made in-process.
 - No single point of failure for authorization.
-- Each service can extend its local PIP with domain-specific attributes (e.g., Account Service knows account balance and status).
+- Each service can extend its local PIP with domain-specific attributes (e.g., Wallet Service knows wallet balance and status).
 
 **Trade-offs:**
 - Policy updates are not instantaneous across services — eventual consistency window exists.
 - Each service carries the operational overhead of consuming and applying policy/attribute events.
 - Debugging authorization failures may require checking which policy version a specific service instance has loaded.
-- Full-sync events (`full-sync` topic) must be implemented to handle cold starts and drift recovery.
+
+## Cold Start and Drift Recovery
+
+On startup, each service consumes a `FullSyncEvent` from the `full-sync` Kafka topic. This event contains all current user attributes published by Identity Service and is used to warm the Policy Agent's attribute cache before the service begins accepting requests.
+
+If Kafka is unavailable on startup, the service falls back to L2 Redis cache (see ADR-005). Redis holds the last known attribute state with a longer TTL specifically to cover restart scenarios. If both Kafka and Redis are unavailable, the service starts with an empty attribute cache and builds it incrementally as domain events arrive — accepting the risk of briefly evaluating decisions with incomplete attributes.

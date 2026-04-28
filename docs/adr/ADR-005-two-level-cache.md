@@ -25,8 +25,8 @@ Implement a **two-level cache strategy** in every service's Policy Agent:
 
 **Cache invalidation:**
 - Policy updates: `PolicyUpdatedEvent` from Kafka invalidates both L1 and L2 for the affected policy.
-- Attribute changes: `AttributeChangedEvent` invalidates both levels for the affected subject or resource.
-- Access revocation: `AccessRevokedEvent` (see ADR-006) triggers immediate invalidation of both levels, bypassing TTL.
+- Attribute changes: specific domain events (`UserStatusChangedEvent`, `AccountStatusChangedEvent`, `KycLevelUpdatedEvent`, `MfaEnabledEvent`) invalidate both levels for the affected subject or resource.
+- Access revocation: `AccessRevokedEvent` (see ADR-010) triggers immediate invalidation of both levels, bypassing TTL.
 
 ## Consequences
 
