@@ -5,7 +5,9 @@ import io.ciphernance.identity.application.mediator.QueryHandler;
 import io.ciphernance.identity.application.query.account.status.GetAccountResponse;
 import io.ciphernance.identity.domain.model.Account;
 import io.ciphernance.identity.domain.port.AccountRepositoryPort;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GetAccountByOwnerIdHandler implements QueryHandler<GetAccountByOwnerIdQuery, GetAccountResponse> {
 
     private final AccountRepositoryPort accountRepository;
