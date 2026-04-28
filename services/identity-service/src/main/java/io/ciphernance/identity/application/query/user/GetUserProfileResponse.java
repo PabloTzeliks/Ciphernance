@@ -1,4 +1,4 @@
-package io.ciphernance.identity.application.query.user.profile;
+package io.ciphernance.identity.application.query.user;
 
 import io.ciphernance.identity.domain.model.User;
 

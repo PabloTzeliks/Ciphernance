@@ -2,6 +2,7 @@ package io.ciphernance.identity.application.query.account.status;
 
 import io.ciphernance.identity.application.exception.account.AccountNotFoundException;
 import io.ciphernance.identity.application.mediator.QueryHandler;
+import io.ciphernance.identity.application.query.account.GetAccountResponse;
 import io.ciphernance.identity.domain.model.Account;
 import io.ciphernance.identity.domain.port.AccountRepositoryPort;
 import org.springframework.stereotype.Component;

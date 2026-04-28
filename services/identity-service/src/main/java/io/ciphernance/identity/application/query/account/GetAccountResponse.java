@@ -1,4 +1,4 @@
-package io.ciphernance.identity.application.query.account.status;
+package io.ciphernance.identity.application.query.account;
 
 import io.ciphernance.identity.domain.model.Account;
 
