@@ -39,15 +39,14 @@ When Java 24+ is adopted, migration requires updating each factory method indivi
 ```java
 // Direct usage inside domain factory methods
 // Example: User.create() in identity-service
-public static User create(String username, String email, String passwordHash) {
-    Email userEmail = new Email(email);
-    Username userUsername = new Username(username);
+// Value Objects are constructed by the caller (handler), not inside the factory.
+public static User create(Username username, Email email, String passwordHash) {
     Instant now = Instant.now();
 
     return new User(
         Generators.timeBasedEpochGenerator().generate(),
-        userUsername,
-        userEmail,
+        username,
+        email,
         passwordHash,
         UserRole.USER_ROLE,
         KycLevel.KYC_LEVEL_1,
@@ -58,6 +57,11 @@ public static User create(String username, String email, String passwordHash) {
         now
     );
 }
+
+// Caller (RegisterUserHandler) constructs Value Objects before calling the factory:
+// Email email = new Email(command.email());
+// Username username = new Username(command.username());
+// User user = User.create(username, email, passwordEncoder.encode(command.password()));
 ```
 
 ## Migration Path

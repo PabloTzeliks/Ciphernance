@@ -25,8 +25,13 @@ OwnerType (USER, AGENT, MERCHANT) is deferred — MVP only supports USER.
 ## MVP Constraints
 - One User has one Account
 - One Account has one Wallet (BRL)
-- Account + Wallet created automatically on User registration
+- Account created synchronously during User registration by Identity Service
+- Wallet created asynchronously by Wallet Service upon consuming `AccountCreatedEvent` — not in the registration handler
 - Single asset: BRL
+
+## Implementation Notes
+
+**`Account.ownerId` field naming:** The Account entity references its owner via `ownerId` (not `userId`). This naming is intentional — it remains forward-compatible with the deferred `OwnerType` (USER, AGENT, MERCHANT). In MVP only USER is supported, but renaming the field later would require a schema migration and API change. All port methods (`findByOwnerId`, `existsByOwnerId`) follow the same convention.
 
 ## Consequences
 
